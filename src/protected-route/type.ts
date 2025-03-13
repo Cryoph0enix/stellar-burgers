@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
 export interface ISecureRouteOptions {
-  unknown?: boolean;
+  anonymous?: boolean;
   children?: ReactNode;
 }

@@ -18,12 +18,26 @@ type Story = StoryObj<typeof meta>;
 
 export const LoggedIn: Story = {
   args: {
-    userName: 'John Doe'
+    userName: 'John Doe',
+    currentRoute: {
+      hash: '',
+      key: 'eitkep27',
+      pathname: '/',
+      search: '',
+      state: null
+    }
   }
 };
 
 export const LoggedOut: Story = {
   args: {
-    userName: undefined
+    userName: undefined,
+    currentRoute: {
+      hash: '',
+      key: 'eitkep27',
+      pathname: '/',
+      search: '',
+      state: null
+    }
   }
 };

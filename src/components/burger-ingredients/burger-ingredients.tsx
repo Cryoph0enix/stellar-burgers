@@ -7,7 +7,6 @@ import { useSelector, useDispatch } from '../../services/store';
 import { getAllComponents } from '../../slices/burger-constructor-slice';
 
 export const BurgerIngredients: FC = () => {
-  /** TODO: взять переменные из стора */
   const [buns, setBurgerBuns] = useState<TIngredient[]>([]);
   const [mains, addMains] = useState<TIngredient[]>([]);
   const [sauces, setSauces] = useState<TIngredient[]>([]);

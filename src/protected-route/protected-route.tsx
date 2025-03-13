@@ -6,7 +6,7 @@ import { Preloader } from '@ui';
 import { ISecureRouteOptions } from './type';
 
 export const ProtectedRoute: React.FC<ISecureRouteOptions> = ({
-  unknown = false,
+  anonymous = false,
   children
 }) => {
   const { isAuthenticated, isInitialized, isFetching } = useSelector(
@@ -16,10 +16,17 @@ export const ProtectedRoute: React.FC<ISecureRouteOptions> = ({
   const location = useLocation();
   const redirectTo = location.state?.from || '/';
 
-  if (!isInitialized || isFetching) return <Preloader />;
-  if (unknown && isAuthenticated) return <Navigate to={redirectTo} replace />;
-  if (!isAuthenticated)
-    return <Navigate to='/login' state={{ from: location }} replace />;
+  if (!isInitialized || isFetching) {
+    return <Preloader />;
+  }
+
+  if (anonymous && isFetching) {
+    return <Navigate to={redirectTo} />;
+  }
+
+  if (!anonymous && !isAuthenticated) {
+    return <Navigate to='/login' state={{ from: location }} />;
+  }
 
   return children;
 };

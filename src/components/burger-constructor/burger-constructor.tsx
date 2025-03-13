@@ -30,15 +30,14 @@ export const BurgerConstructor: FC = () => {
   const ingredientsId = useMemo(
     () =>
       [
-        ...constructorItems.toppings.map((item) => item._id),
-        constructorItems.burgerBun?._id
+        ...constructorItems.ingredients.map((item) => item._id),
+        constructorItems.bun?._id
       ].filter(Boolean) as string[],
     [constructorItems]
   );
 
   const onOrderClick = useCallback(() => {
-    if (!constructorItems.burgerBun || orderRequest || !ingredientsId.length)
-      return;
+    if (!constructorItems.bun || orderRequest || !ingredientsId.length) return;
 
     if (!user) {
       navigate('/login');
@@ -59,8 +58,8 @@ export const BurgerConstructor: FC = () => {
 
   const price = useMemo(
     () =>
-      (constructorItems.burgerBun?.price || 0) * 2 +
-      constructorItems.toppings.reduce(
+      (constructorItems.bun?.price || 0) * 2 +
+      constructorItems.ingredients.reduce(
         (acc: number, item: TConstructorIngredient) => acc + item.price,
         0
       ),

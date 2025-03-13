@@ -23,8 +23,8 @@ const initialState: IComponentsState = {
   components: [],
   errorMessage: null,
   constructorElements: {
-    burgerBun: null,
-    toppings: []
+    bun: null,
+    ingredients: []
   }
 };
 
@@ -33,31 +33,31 @@ const burgerConstructorSlice = createSlice({
   initialState,
   reducers: {
     setBurgerBun: (state, { payload }: { payload: TIngredient }) => {
-      state.constructorElements.burgerBun = createConstructorIngredient(
+      state.constructorElements.bun = createConstructorIngredient(
         payload,
         nanoid()
       );
     },
     resetBurgerBun: (state) => {
-      state.constructorElements.burgerBun = null;
+      state.constructorElements.bun = null;
     },
     addTopping: (state, { payload }: { payload: TIngredient }) => {
-      state.constructorElements.toppings.push(
+      state.constructorElements.ingredients.push(
         createConstructorIngredient(payload, nanoid())
       );
     },
     setSauce: (state, { payload }: { payload: TIngredient }) => {
       const position = Math.floor(
-        state.constructorElements.toppings.length / 2
+        state.constructorElements.ingredients.length / 2
       );
-      state.constructorElements.toppings.splice(
+      state.constructorElements.ingredients.splice(
         position,
         0,
         createConstructorIngredient(payload, nanoid())
       );
     },
     removeTopping: (state, { payload: index }: { payload: number }) => {
-      state.constructorElements.toppings.splice(index, 1);
+      state.constructorElements.ingredients.splice(index, 1);
     },
     clearConstructor: (state) => {
       state.constructorElements = initialState.constructorElements;
@@ -65,21 +65,21 @@ const burgerConstructorSlice = createSlice({
     reorderToppingUp: (state, { payload: index }: { payload: number }) => {
       if (index === 0) return;
       [
-        state.constructorElements.toppings[index],
-        state.constructorElements.toppings[index - 1]
+        state.constructorElements.ingredients[index],
+        state.constructorElements.ingredients[index - 1]
       ] = [
-        state.constructorElements.toppings[index - 1],
-        state.constructorElements.toppings[index]
+        state.constructorElements.ingredients[index - 1],
+        state.constructorElements.ingredients[index]
       ];
     },
     reorderToppingDown: (state, { payload: index }: { payload: number }) => {
-      if (index === state.constructorElements.toppings.length - 1) return;
+      if (index === state.constructorElements.ingredients.length - 1) return;
       [
-        state.constructorElements.toppings[index],
-        state.constructorElements.toppings[index + 1]
+        state.constructorElements.ingredients[index],
+        state.constructorElements.ingredients[index + 1]
       ] = [
-        state.constructorElements.toppings[index + 1],
-        state.constructorElements.toppings[index]
+        state.constructorElements.ingredients[index + 1],
+        state.constructorElements.ingredients[index]
       ];
     }
   },

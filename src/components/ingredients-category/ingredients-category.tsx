@@ -12,13 +12,13 @@ export const IngredientsCategory = forwardRef<
   const burgerConstructor = useSelector(getConstructorElements);
 
   const ingredientsCounters = useMemo(() => {
-    const { burgerBun, toppings } = burgerConstructor;
+    const { bun, ingredients } = burgerConstructor;
     const counters: { [key: string]: number } = {};
-    toppings.forEach((ingredient: TIngredient) => {
+    ingredients.forEach((ingredient: TIngredient) => {
       if (!counters[ingredient._id]) counters[ingredient._id] = 0;
       counters[ingredient._id]++;
     });
-    if (burgerBun) counters[burgerBun._id] = 2;
+    if (bun) counters[bun._id] = 2;
     return counters;
   }, [burgerConstructor]);
 

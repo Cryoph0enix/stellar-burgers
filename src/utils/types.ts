@@ -54,8 +54,8 @@ export interface IComponentsState {
   components: TIngredient[];
   errorMessage: string | null;
   constructorElements: {
-    burgerBun: TConstructorIngredient | null;
-    toppings: TConstructorIngredient[];
+    bun: TConstructorIngredient | null;
+    ingredients: TConstructorIngredient[];
   };
 }
 
