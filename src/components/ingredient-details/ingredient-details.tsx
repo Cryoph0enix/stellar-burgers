@@ -9,9 +9,9 @@ import { getAllComponents } from '../../slices/burger-constructor-slice';
 export const IngredientDetails: FC<{ isPrimary?: boolean }> = ({
   isPrimary = false
 }) => {
-  const { itemId } = useParams();
+  const { id } = useParams();
   const components = useSelector(getAllComponents);
-  const ingredientData = components.find((item) => item._id == itemId);
+  const ingredientData = components.find((item) => item._id == id);
 
   if (!ingredientData) {
     return <Preloader />;
