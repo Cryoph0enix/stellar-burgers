@@ -1,5 +1,6 @@
 import { FC, memo } from 'react';
 import { useLocation } from 'react-router-dom';
+import { nanoid } from '@reduxjs/toolkit';
 
 import { BurgerIngredientUI } from '@ui';
 import { TBurgerIngredientProps } from './type';
@@ -18,11 +19,11 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = memo(
 
     const handleAdd = () => {
       if (ingredient.type === 'bun') {
-        dispatch(setBurgerBun(ingredient));
+        dispatch(setBurgerBun({ ingredient, id: nanoid() }));
       } else if (ingredient.type === 'main') {
-        dispatch(addTopping(ingredient));
+        dispatch(addTopping({ ingredient, id: nanoid() }));
       } else {
-        dispatch(setSauce(ingredient));
+        dispatch(setSauce({ ingredient, id: nanoid() }));
       }
     };
 

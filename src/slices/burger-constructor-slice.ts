@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getIngredientsApi } from '@api';
 import {
   IComponentsState,
@@ -32,70 +32,71 @@ const burgerConstructorSlice = createSlice({
   name: 'ingredients',
   initialState,
   reducers: {
-    setBurgerBun: (state, { payload }: { payload: TIngredient }) => {
+    setBurgerBun: (
+      state,
+      { payload }: { payload: { ingredient: TIngredient; id: string } }
+    ) => {
       state.constructorElements.bun = createConstructorIngredient(
-        payload,
-        nanoid()
+        payload.ingredient,
+        payload.id
       );
     },
     resetBurgerBun: (state) => {
       state.constructorElements.bun = null;
     },
-    addTopping: (state, { payload }: { payload: TIngredient }) => {
+    addTopping: (
+      state,
+      { payload }: { payload: { ingredient: TIngredient; id: string } }
+    ) => {
       state.constructorElements.ingredients.push(
-        createConstructorIngredient(payload, nanoid())
+        createConstructorIngredient(payload.ingredient, payload.id)
       );
     },
-    setSauce: (state, { payload }: { payload: TIngredient }) => {
-      const position = Math.floor(
-        state.constructorElements.ingredients.length / 2
-      );
+    setSauce: (
+      state,
+      { payload }: { payload: { ingredient: TIngredient; id: string } }
+    ) => {
       state.constructorElements.ingredients.splice(
-        position,
+        Math.floor(state.constructorElements.ingredients.length / 2),
         0,
-        createConstructorIngredient(payload, nanoid())
+        createConstructorIngredient(payload.ingredient, payload.id)
       );
     },
-    removeTopping: (state, { payload: index }: { payload: number }) => {
-      state.constructorElements.ingredients.splice(index, 1);
+    removeTopping: (state, { payload }: { payload: number }) => {
+      state.constructorElements.ingredients.splice(payload, 1);
     },
     clearConstructor: (state) => {
-      state.constructorElements = initialState.constructorElements;
+      state.constructorElements = { bun: null, ingredients: [] };
     },
-    reorderToppingUp: (state, { payload: index }: { payload: number }) => {
-      if (index === 0) return;
-      [
-        state.constructorElements.ingredients[index],
-        state.constructorElements.ingredients[index - 1]
-      ] = [
-        state.constructorElements.ingredients[index - 1],
-        state.constructorElements.ingredients[index]
-      ];
+    reorderToppingUp: (state, { payload }: { payload: number }) => {
+      state.constructorElements.ingredients[payload - 1] =
+        state.constructorElements.ingredients.splice(
+          payload,
+          1,
+          state.constructorElements.ingredients[payload - 1]
+        )[0];
     },
-    reorderToppingDown: (state, { payload: index }: { payload: number }) => {
-      if (index === state.constructorElements.ingredients.length - 1) return;
-      [
-        state.constructorElements.ingredients[index],
-        state.constructorElements.ingredients[index + 1]
-      ] = [
-        state.constructorElements.ingredients[index + 1],
-        state.constructorElements.ingredients[index]
-      ];
+    reorderToppingDown: (state, { payload }: { payload: number }) => {
+      state.constructorElements.ingredients[payload] =
+        state.constructorElements.ingredients.splice(
+          payload + 1,
+          1,
+          state.constructorElements.ingredients[payload]
+        )[0];
     }
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(getIngredientsAsync.pending, (state) => {
-        state.isFetching = true;
-      })
-      .addCase(getIngredientsAsync.rejected, (state, action) => {
-        state.isFetching = false;
-        state.errorMessage = action.error?.message ?? 'Unknown error';
-      })
-      .addCase(getIngredientsAsync.fulfilled, (state, { payload }) => {
-        state.isFetching = false;
-        state.components = payload;
-      });
+    builder.addCase(getIngredientsAsync.pending, (state) => {
+      state.isFetching = true;
+    });
+    builder.addCase(getIngredientsAsync.rejected, (state, action) => {
+      state.isFetching = false;
+      state.errorMessage = action.error?.message ?? 'Unknown error';
+    });
+    builder.addCase(getIngredientsAsync.fulfilled, (state, { payload }) => {
+      state.isFetching = false;
+      state.components = payload;
+    });
   }
 });
 
