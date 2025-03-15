@@ -14,57 +14,30 @@ import { IAuthStatus } from '@utils-types';
 import { deleteCookie, setCookie } from '../utils/cookie';
 import { RootState } from '../services/store';
 
-// Функция для установки токенов
-const setTokens = (userData: any) => {
-  if (userData.success) {
-    setCookie('accessToken', userData.accessToken);
-    localStorage.setItem('refreshToken', userData.refreshToken);
-  }
-};
-
-// Функция для удаления токенов
-const removeTokens = () => {
-  deleteCookie('accessToken');
-  localStorage.removeItem('refreshToken');
-};
-
-// Функция для обработки ошибок
-const handleError = (state: IAuthStatus, action: any) => {
-  state.isFetching = false;
-  state.errorMessage = action.error?.message ?? 'Unknown error';
-};
-
-// Функция для сброса состояния при pending
-const resetStateOnPending = (state: IAuthStatus) => {
-  state.isAuthenticated = false;
-  state.isFetching = true;
-  state.errorMessage = null;
-};
-
-// Функция для сброса состояния при fulfilled
-const resetStateOnFulfilled = (state: IAuthStatus, payload: any) => {
-  state.isFetching = false;
-  state.isInitialized = true;
-  state.errorMessage = null;
-  state.currentUser = payload.currentUser;
-  state.isAuthenticated = true;
-};
-
+// Создание асинхронных экшенов
 export const loginAsync = createAsyncThunk(
   'users/loginUser',
-  async (userData: TLoginData) => {
-    const res = await loginUserApi(userData);
-    setTokens(res);
-    return res;
+  async ({ email, password }: TLoginData) => {
+    const data = await loginUserApi({ email, password });
+    if (data.success) {
+      setCookie('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+      return data;
+    }
+    return null;
   }
 );
 
 export const registerAsync = createAsyncThunk(
   'users/registerUser',
-  async (userData: TRegisterData) => {
-    const res = await registerUserApi(userData);
-    setTokens(res);
-    return res;
+  async ({ email, name, password }: TRegisterData) => {
+    const data = await registerUserApi({ email, name, password });
+    if (data.success) {
+      setCookie('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+      return data;
+    }
+    return null;
   }
 );
 
@@ -88,19 +61,22 @@ export const updateUserAsync = createAsyncThunk(
 export const logoutAsync = createAsyncThunk('user/logoutUser', async () => {
   const res = await logoutApi();
   if (res.success) {
-    removeTokens();
+    deleteCookie('accessToken');
+    localStorage.removeItem('refreshToken');
   }
   return res;
 });
 
-export const initialState: IAuthStatus = {
+// Начальное состояние
+const initialState: IAuthStatus = {
   isInitialized: false,
   isFetching: false,
-  currentUser: null,
+  user: null,
   errorMessage: null,
   isAuthenticated: false
 };
 
+// Создание слайса
 export const userAuthSlice = createSlice({
   name: 'user',
   initialState,
@@ -110,63 +86,74 @@ export const userAuthSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    builder.addCase(loginAsync.pending, resetStateOnPending);
-    builder.addCase(registerAsync.pending, resetStateOnPending);
-    builder.addCase(fetchUserAsync.pending, resetStateOnPending);
-
-    builder.addCase(loginAsync.rejected, (state, action) => {
-      handleError(state, action);
-    });
-    builder.addCase(registerAsync.rejected, (state, action) => {
-      handleError(state, action);
-      state.isInitialized = true;
-    });
-    builder.addCase(fetchUserAsync.rejected, (state, action) => {
-      handleError(state, action);
-      state.isInitialized = true;
-    });
-    builder.addCase(logoutAsync.rejected, (state, action) => {
-      state.errorMessage = action.error?.message ?? 'Unknown error';
-    });
-    builder.addCase(forgotPasswordAsync.rejected, (state, action) => {
-      state.errorMessage = action.error?.message ?? 'Unknown error';
-    });
-    builder.addCase(resetPasswordAsync.rejected, (state, action) => {
-      state.errorMessage = action.error?.message ?? 'Unknown error';
-    });
-
-    builder.addCase(loginAsync.fulfilled, resetStateOnFulfilled);
-    builder.addCase(registerAsync.fulfilled, resetStateOnFulfilled);
-    builder.addCase(fetchUserAsync.fulfilled, resetStateOnFulfilled);
-
-    builder.addCase(updateUserAsync.fulfilled, (state, { payload }) => {
-      state.currentUser = payload.user;
+    // Обработка общих состояний для асинхронных экшенов
+    const handlePending = (state: IAuthStatus) => {
+      state.isFetching = true;
       state.errorMessage = null;
-    });
+    };
+
+    const handleRejected = (state: IAuthStatus, action: any) => {
+      state.isFetching = false;
+      state.errorMessage = action.error?.message ?? 'Unknown error';
+    };
+
+    const handleFulfilledWithAuth = (state: IAuthStatus, { payload }: any) => {
+      state.isFetching = false;
+      state.isInitialized = true;
+      state.errorMessage = null;
+      state.user = payload?.user || null;
+      state.isAuthenticated = true;
+    };
+
+    const handleFulfilledWithoutAuth = (state: IAuthStatus) => {
+      state.isFetching = false;
+      state.errorMessage = null;
+    };
+
+    // Регистрация обработчиков для каждого типа экшена
+    builder
+      .addCase(loginAsync.pending, handlePending)
+      .addCase(loginAsync.rejected, handleRejected)
+      .addCase(loginAsync.fulfilled, handleFulfilledWithAuth);
+
+    builder
+      .addCase(registerAsync.pending, handlePending)
+      .addCase(registerAsync.rejected, handleRejected)
+      .addCase(registerAsync.fulfilled, handleFulfilledWithAuth);
+
+    builder
+      .addCase(fetchUserAsync.pending, handlePending)
+      .addCase(fetchUserAsync.rejected, handleRejected)
+      .addCase(fetchUserAsync.fulfilled, handleFulfilledWithAuth);
+
+    builder
+      .addCase(updateUserAsync.fulfilled, (state, { payload }) => {
+        state.user = payload?.user;
+        state.errorMessage = null;
+      })
+      .addCase(updateUserAsync.rejected, handleRejected);
+
+    builder
+      .addCase(forgotPasswordAsync.pending, handlePending)
+      .addCase(forgotPasswordAsync.rejected, handleRejected)
+      .addCase(forgotPasswordAsync.fulfilled, handleFulfilledWithoutAuth);
+
+    builder
+      .addCase(resetPasswordAsync.pending, handlePending)
+      .addCase(resetPasswordAsync.rejected, handleRejected)
+      .addCase(resetPasswordAsync.fulfilled, handleFulfilledWithoutAuth);
 
     builder.addCase(logoutAsync.fulfilled, (state) => {
-      state.currentUser = null;
+      state.user = null;
       state.errorMessage = null;
       state.isAuthenticated = false;
-    });
-
-    builder.addCase(forgotPasswordAsync.pending, (state) => {
-      state.errorMessage = null;
-    });
-    builder.addCase(resetPasswordAsync.pending, (state) => {
-      state.errorMessage = null;
-    });
-    builder.addCase(forgotPasswordAsync.fulfilled, (state) => {
-      state.errorMessage = null;
-    });
-    builder.addCase(resetPasswordAsync.fulfilled, (state) => {
-      state.errorMessage = null;
     });
   }
 });
 
+// Экспорт селекторов и экшенов
 export const { init } = userAuthSlice.actions;
-export const getUser = (state: RootState) => state.user.currentUser;
+export const getUser = (state: RootState) => state.user.user;
 export const getUserError = (state: RootState) => state.user.errorMessage;
 export const isUserLoading = (state: RootState) => state.user.isFetching;
 export const isLoggedIn = (state: RootState) => state.user.isAuthenticated;

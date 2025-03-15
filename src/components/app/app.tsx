@@ -30,7 +30,7 @@ const App = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const position = location.state?.location;
+  const position = location.state?.background;
   const loadingState = useSelector(getIngredientsLoadingState);
 
   useEffect(() => {

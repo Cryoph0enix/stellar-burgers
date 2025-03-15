@@ -20,7 +20,7 @@ export const Login: FC = () => {
   const loadingState = useSelector(isUserLoading);
   const navigate = useNavigate();
   const location = useLocation();
-  const redirect = location.state?.from || '/';
+  const redirect = location.state?.from?.pathname || '/';
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();

@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import {
   Input,
   Button,
@@ -45,12 +45,7 @@ export const LoginUI: FC<LoginUIProps> = ({
             />
           </div>
           <div className={`pb-6 ${styles.button}`}>
-            <Button
-              type='primary'
-              size='medium'
-              htmlType='submit'
-              onClick={handleSubmit}
-            >
+            <Button type='primary' size='medium' htmlType='submit'>
               Войти
             </Button>
           </div>

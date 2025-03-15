@@ -20,12 +20,12 @@ export const ProtectedRoute: React.FC<ISecureRouteOptions> = ({
     return <Preloader />;
   }
 
-  if (anonymous && isFetching) {
-    return <Navigate to={redirectTo} />;
-  }
-
   if (!anonymous && !isAuthenticated) {
     return <Navigate to='/login' state={{ from: location }} />;
+  }
+
+  if (anonymous && isAuthenticated) {
+    return <Navigate to='/' replace />;
   }
 
   return children;

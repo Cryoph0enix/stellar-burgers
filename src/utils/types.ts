@@ -44,7 +44,7 @@ export type TTabMode = 'bun' | 'sauce' | 'main';
 export interface IAuthStatus {
   isInitialized: boolean;
   isFetching: boolean;
-  currentUser: TUser | null;
+  user: TUser | null;
   errorMessage: string | null;
   isAuthenticated: boolean;
 }
