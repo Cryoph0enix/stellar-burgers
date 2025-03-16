@@ -14,7 +14,6 @@ import { IAuthStatus } from '@utils-types';
 import { deleteCookie, setCookie } from '../utils/cookie';
 import { RootState } from '../services/store';
 
-// Создание асинхронных экшенов
 export const loginAsync = createAsyncThunk(
   'users/loginUser',
   async ({ email, password }: TLoginData) => {
@@ -67,7 +66,6 @@ export const logoutAsync = createAsyncThunk('user/logoutUser', async () => {
   return res;
 });
 
-// Начальное состояние
 const initialState: IAuthStatus = {
   isInitialized: false,
   isFetching: false,
@@ -76,7 +74,6 @@ const initialState: IAuthStatus = {
   isAuthenticated: false
 };
 
-// Создание слайса
 export const userAuthSlice = createSlice({
   name: 'user',
   initialState,
@@ -86,7 +83,6 @@ export const userAuthSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    // Обработка общих состояний для асинхронных экшенов
     const handlePending = (state: IAuthStatus) => {
       state.isFetching = true;
       state.errorMessage = null;
@@ -110,7 +106,6 @@ export const userAuthSlice = createSlice({
       state.errorMessage = null;
     };
 
-    // Регистрация обработчиков для каждого типа экшена
     builder
       .addCase(loginAsync.pending, handlePending)
       .addCase(loginAsync.rejected, handleRejected)
@@ -151,7 +146,6 @@ export const userAuthSlice = createSlice({
   }
 });
 
-// Экспорт селекторов и экшенов
 export const { init } = userAuthSlice.actions;
 export const getUser = (state: RootState) => state.user.user;
 export const getUserError = (state: RootState) => state.user.errorMessage;

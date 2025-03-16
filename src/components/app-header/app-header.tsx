@@ -6,6 +6,6 @@ import { useLocation } from 'react-router-dom';
 
 export const AppHeader: FC = () => {
   const userName = useSelector(getUser)?.name;
-  const currentRoute = useLocation();
-  return <AppHeaderUI userName={userName} currentRoute={currentRoute} />;
+  const location = useLocation();
+  return <AppHeaderUI userName={userName} location={location} />;
 };

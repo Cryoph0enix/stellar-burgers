@@ -12,16 +12,19 @@
 .menu_part_left {
   display: flex;
   flex-basis: 35%;
+  gap: 8px;
 }
 
 .link {
   display: flex;
+  padding: 16px 20px;
   text-decoration: none;
   color: var(--text-inactive-color);
 }
 
 .link_active {
   display: flex;
+  padding: 16px 20px;
   text-decoration: none;
   color: var(--text-primary-color);
 }

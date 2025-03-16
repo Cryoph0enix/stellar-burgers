@@ -1,31 +1,32 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-
-import { useSelector, RootState } from '../services/store';
+import { useSelector } from '../services/store';
+import { FC } from 'react';
 import { Preloader } from '@ui';
 import { ISecureRouteOptions } from './type';
+import { RootState } from '../services/store';
 
-export const ProtectedRoute: React.FC<ISecureRouteOptions> = ({
-  anonymous = false,
-  children
+export const ProtectedRoute: FC<ISecureRouteOptions> = ({
+  children,
+  anonymous = false
 }) => {
-  const { isAuthenticated, isInitialized, isFetching } = useSelector(
+  const { isAuthenticated, isFetching } = useSelector(
     (state: RootState) => state.user
   );
 
   const location = useLocation();
-  const redirectTo = location.state?.from || '/';
+  const redirect = location.state?.from || '/';
 
-  if (!isInitialized || isFetching) {
+  if (isFetching) {
     return <Preloader />;
+  }
+
+  if (anonymous && isAuthenticated) {
+    return <Navigate to={redirect} />;
   }
 
   if (!anonymous && !isAuthenticated) {
     return <Navigate to='/login' state={{ from: location }} />;
-  }
-
-  if (anonymous && isAuthenticated) {
-    return <Navigate to='/' replace />;
   }
 
   return children;

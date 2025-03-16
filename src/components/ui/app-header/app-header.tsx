@@ -31,29 +31,29 @@ const MenuItem: FC<{
   path: string;
   icon: any;
   text: string;
-  currentRoute: any;
+  location: any;
   userName?: string;
-}> = ({ path, icon, text, currentRoute, userName }) => (
+}> = ({ path, icon, text, location, userName }) => (
   <Link
     to={path}
     className={
       path === '/feed'
-        ? currentRoute.pathname.startsWith(path)
+        ? location.pathname.startsWith(path)
           ? styles.link_active
           : styles.link
-        : currentRoute.pathname === path
+        : location.pathname === path
           ? styles.link_active
           : styles.link
     }
-    state={{ from: currentRoute }}
+    state={{ from: location }}
   >
     {React.createElement(icon, {
       type:
         path === '/feed'
-          ? currentRoute.pathname.startsWith(path)
+          ? location.pathname.startsWith(path)
             ? 'primary'
             : 'disabled'
-          : currentRoute.pathname === path
+          : location.pathname === path
             ? 'primary'
             : 'disabled'
     })}
@@ -63,10 +63,7 @@ const MenuItem: FC<{
   </Link>
 );
 
-export const AppHeaderUI: FC<TAppHeaderUIProps> = ({
-  userName,
-  currentRoute
-}) => (
+export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName, location }) => (
   <header className={styles.header}>
     <nav className={`${styles.menu} p-4`}>
       <div className={styles.menu_part_left}>
@@ -76,12 +73,12 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({
             path={route.path}
             icon={route.icon}
             text={route.text}
-            currentRoute={currentRoute}
+            location={location}
           />
         ))}
       </div>
       <div className={styles.logo}>
-        <Link to='/' state={{ from: currentRoute }}>
+        <Link to='/' state={{ from: location }}>
           <Logo className={styles.link_active} />
         </Link>
       </div>
@@ -91,7 +88,7 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({
           path={routes[2].path}
           icon={routes[2].icon}
           text={routes[2].text}
-          currentRoute={currentRoute}
+          location={location}
           userName={userName}
         />
       </div>
