@@ -8,7 +8,7 @@ import userAuthReducer from '../slices/user-auth-slice';
 import burgerConstructorReducer from '../slices/burger-constructor-slice';
 import orderConfigReducer from '../slices/orders-config-slice';
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
   user: userAuthReducer,
   toppings: burgerConstructorReducer,
   orders: orderConfigReducer

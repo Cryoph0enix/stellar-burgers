@@ -69,20 +69,30 @@ const burgerConstructorSlice = createSlice({
       state.constructorElements = { bun: null, ingredients: [] };
     },
     reorderToppingUp: (state, { payload }: { payload: number }) => {
-      state.constructorElements.ingredients[payload - 1] =
-        state.constructorElements.ingredients.splice(
-          payload,
-          1,
-          state.constructorElements.ingredients[payload - 1]
-        )[0];
+      if (
+        payload < 1 ||
+        payload >= state.constructorElements.ingredients.length
+      ) {
+        return; // Выходим, если индекс недопустим
+      }
+      const ingredients = state.constructorElements.ingredients;
+      [ingredients[payload - 1], ingredients[payload]] = [
+        ingredients[payload],
+        ingredients[payload - 1]
+      ];
     },
     reorderToppingDown: (state, { payload }: { payload: number }) => {
-      state.constructorElements.ingredients[payload] =
-        state.constructorElements.ingredients.splice(
-          payload + 1,
-          1,
-          state.constructorElements.ingredients[payload]
-        )[0];
+      if (
+        payload < 0 ||
+        payload >= state.constructorElements.ingredients.length - 1
+      ) {
+        return; // Выходим, если индекс недопустим
+      }
+      const ingredients = state.constructorElements.ingredients;
+      [ingredients[payload], ingredients[payload + 1]] = [
+        ingredients[payload + 1],
+        ingredients[payload]
+      ];
     }
   },
   extraReducers: (builder) => {
