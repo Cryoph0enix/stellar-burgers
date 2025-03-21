@@ -215,4 +215,40 @@ describe('test burgerConstructor', () => {
     expect(finalState.isFetching).toBe(false);
     expect(finalState.errorMessage).toEqual('ошибка');
   });
+
+  it('removing topping from empty constructor', () => {
+    const newState = burgerConstructorSlice(initialState, removeTopping(0));
+    const { constructorElements } = newState;
+    expect(constructorElements.ingredients).toEqual([]);
+  });
+
+  it('reorder topping with invalid index (negative index)', () => {
+    let newState = burgerConstructorSlice(
+      initialState,
+      addTopping({
+        ingredient: mockBurgerIngredients[1],
+        id: mockBurgerIngredients[1]._id
+      })
+    );
+    newState = burgerConstructorSlice(newState, reorderToppingUp(-1));
+    const { constructorElements } = newState;
+    expect(constructorElements.ingredients).toEqual([
+      { ...mockBurgerIngredients[1], id: mockBurgerIngredients[1]._id }
+    ]);
+  });
+
+  it('reorder topping with invalid index (index out of bounds)', () => {
+    let newState = burgerConstructorSlice(
+      initialState,
+      addTopping({
+        ingredient: mockBurgerIngredients[1],
+        id: mockBurgerIngredients[1]._id
+      })
+    );
+    newState = burgerConstructorSlice(newState, reorderToppingDown(5));
+    const { constructorElements } = newState;
+    expect(constructorElements.ingredients).toEqual([
+      { ...mockBurgerIngredients[1], id: mockBurgerIngredients[1]._id }
+    ]);
+  });
 });
